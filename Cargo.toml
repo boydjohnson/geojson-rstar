@@ -1,0 +1,11 @@
+[package]
+name = "geojson-rstar"
+version = "0.1.0"
+authors = ["Boyd Johnson <johnson.boyd@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+geo = "^0.12"
+geojson = { git = "http://github.com/georust/geojson" }
+rstar = "^0.3"
+serde_json = "~1.0"
