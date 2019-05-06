@@ -18,6 +18,7 @@ extern crate rstar;
 pub mod error;
 pub mod generic;
 pub mod point_feature;
+pub mod polygon_feature;
 
 pub use point_feature::PointFeature;
 
