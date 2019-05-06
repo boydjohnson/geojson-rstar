@@ -19,6 +19,7 @@ extern crate geojson;
 extern crate rstar;
 
 use crate::error::GeoJsonConversionError;
+use crate::generic::GenericFeature;
 use crate::json::JsonObject;
 use geo::haversine_distance::HaversineDistance;
 use geojson::PointType;
@@ -39,36 +40,57 @@ pub struct PointFeature {
 impl TryFrom<geojson::Feature> for PointFeature {
     type Error = GeoJsonConversionError;
 
-    fn try_from(mut value: geojson::Feature) -> Result<Self, Self::Error> {
-        if let geojson::Value::Point(point_type) = value
+    fn try_from(feature: geojson::Feature) -> Result<PointFeature, GeoJsonConversionError> {
+        <Self as GenericFeature<PointFeature, PointType>>::try_from(feature)
+    }
+}
+
+impl GenericFeature<PointFeature, PointType> for PointFeature {
+    fn take_geometry_type(
+        feature: &mut geojson::Feature,
+    ) -> Result<PointType, GeoJsonConversionError> {
+        if let geojson::Value::Point(point_type) = feature
             .geometry
             .take()
             .ok_or_else(|| {
-                let id = value.id.clone();
+                let id = feature.id.clone();
                 GeoJsonConversionError::MissingGeometry(id)
             })?
             .value
         {
-            if point_type.len() != 2 {
-                let id = value.id.clone();
-                return Err(GeoJsonConversionError::MalformedGeometry(id));
-            }
-
-            let bbox = value.bbox.take().unwrap_or_else(|| {
-                vec![point_type[0], point_type[1], point_type[0], point_type[1]]
-            });
-
-            Ok(PointFeature {
-                bbox,
-                point: point_type,
-                id: value.id,
-                properties: value.properties,
-                foreign_members: value.foreign_members,
-            })
+            Ok(point_type)
         } else {
             Err(GeoJsonConversionError::IncorrectGeometryValue(
-                "Error did not find Point feature".into(),
+                "Error: did not find Point feature".into(),
             ))
+        }
+    }
+
+    fn check_geometry(
+        geometry: &PointType,
+        feature: &geojson::Feature,
+    ) -> Result<(), GeoJsonConversionError> {
+        if geometry.len() != 2 {
+            let id = feature.id.clone();
+            return Err(GeoJsonConversionError::MalformedGeometry(id));
+        }
+        Ok(())
+    }
+
+    fn compute_bbox(feature: &mut geojson::Feature, geometry: &PointType) -> Bbox {
+        feature
+            .bbox
+            .take()
+            .unwrap_or_else(|| vec![geometry[0], geometry[1], geometry[0], geometry[1]])
+    }
+
+    fn create_self(feature: geojson::Feature, bbox: Bbox, geometry: PointType) -> PointFeature {
+        PointFeature {
+            bbox,
+            id: feature.id,
+            point: geometry,
+            properties: feature.properties,
+            foreign_members: feature.foreign_members,
         }
     }
 }
@@ -78,8 +100,8 @@ impl RTreeObject for PointFeature {
 
     fn envelope(&self) -> Self::Envelope {
         AABB::from_point([
-            *self.bbox.get(0).expect("A bounding box has 4 points"),
-            *self.bbox.get(1).expect("A bounding box has 4 points"),
+            *self.bbox.get(0).expect("A bounding box has 4 values"),
+            *self.bbox.get(1).expect("A bounding box has 4 values"),
         ])
     }
 }
@@ -93,11 +115,11 @@ impl PointDistance for PointFeature {
             *self
                 .point
                 .get(0)
-                .expect("Already checked that PointFeature has 2 points"),
+                .expect("Already checked that PointFeature has 2 values"),
             *self
                 .point
                 .get(1)
-                .expect("Already checked that PointFeature has 2 points"),
+                .expect("Already checked that PointFeature has 2 values"),
         );
         self_point.haversine_distance(&geo::Point::new(point[0], point[1]))
     }
