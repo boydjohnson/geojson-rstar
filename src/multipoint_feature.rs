@@ -12,21 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+//! MultiPointFeature can be used with rstar::RTree and carry along the information from the GeoJson
+
 extern crate geojson;
-extern crate rstar;
 
-pub mod error;
-pub mod generic;
-pub mod linestring_feature;
-pub mod multilinestring_feature;
-pub mod multipoint_feature;
-pub mod multipolygon_feature;
-pub mod point_feature;
-pub mod polygon_feature;
+use crate::json::JsonObject;
+use geojson::PointType;
+use geojson::{feature::Id, Bbox};
 
-pub use point_feature::PointFeature;
-
-mod json {
-    use serde_json::{Map, Value as JsonValue};
-    pub type JsonObject = Map<String, JsonValue>;
+#[derive(Clone, Debug, PartialEq)]
+pub struct MultiPointFeature {
+    bbox: Bbox,
+    points: Vec<PointType>,
+    pub id: Option<Id>,
+    pub properties: Option<JsonObject>,
+    pub foreign_members: Option<JsonObject>,
 }
