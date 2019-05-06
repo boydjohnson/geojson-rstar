@@ -14,6 +14,7 @@
 
 use crate::error::GeoJsonConversionError;
 use geojson::Bbox;
+use rstar::AABB;
 
 pub(crate) trait GenericFeature<U, G> {
     fn take_geometry_type(feature: &mut geojson::Feature) -> Result<G, GeoJsonConversionError>;
@@ -38,5 +39,25 @@ pub(crate) trait GenericFeature<U, G> {
             .unwrap_or_else(|| Self::compute_bbox(&mut feature, &geometry));
 
         Ok(Self::create_self(feature, bbox, geometry))
+    }
+}
+
+pub(crate) trait GetBbox<'a> {
+    fn bbox(&'a self) -> &'a Bbox;
+
+    fn envelope(&'a self) -> AABB<[f64; 2]> {
+        AABB::from_points(
+            [
+                [
+                    *self.bbox().get(0).expect("A bounding box has 4 values"),
+                    *self.bbox().get(1).expect("A bounding box has 4 values"),
+                ],
+                [
+                    *self.bbox().get(2).expect("A bounding box has 4 values"),
+                    *self.bbox().get(3).expect("A bounding box has 4 values"),
+                ],
+            ]
+            .iter(),
+        )
     }
 }

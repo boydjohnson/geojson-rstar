@@ -19,7 +19,7 @@ extern crate geojson;
 extern crate rstar;
 
 use crate::error::GeoJsonConversionError;
-use crate::generic::GenericFeature;
+use crate::generic::{GenericFeature, GetBbox};
 use crate::json::JsonObject;
 use geo::haversine_distance::HaversineDistance;
 use geojson::PointType;
@@ -95,14 +95,17 @@ impl GenericFeature<PointFeature, PointType> for PointFeature {
     }
 }
 
+impl<'a> GetBbox<'a> for PointFeature {
+    fn bbox(&'a self) -> &'a Bbox {
+        &self.bbox
+    }
+}
+
 impl RTreeObject for PointFeature {
     type Envelope = AABB<[f64; 2]>;
 
     fn envelope(&self) -> Self::Envelope {
-        AABB::from_point([
-            *self.bbox.get(0).expect("A bounding box has 4 values"),
-            *self.bbox.get(1).expect("A bounding box has 4 values"),
-        ])
+        <Self as GetBbox>::envelope(self)
     }
 }
 
