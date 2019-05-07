@@ -15,6 +15,7 @@
 extern crate geojson;
 extern crate rstar;
 
+pub mod conversion;
 pub mod error;
 pub mod generic;
 pub mod linestring_feature;
