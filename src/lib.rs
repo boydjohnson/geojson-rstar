@@ -25,6 +25,7 @@ pub mod multipolygon_feature;
 pub mod point_feature;
 pub mod polygon_feature;
 
+pub use linestring_feature::LineStringFeature;
 pub use point_feature::PointFeature;
 
 mod json {
