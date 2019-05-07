@@ -27,6 +27,7 @@ pub mod polygon_feature;
 
 pub use linestring_feature::LineStringFeature;
 pub use point_feature::PointFeature;
+pub use polygon_feature::PolygonFeature;
 
 mod json {
     use serde_json::{Map, Value as JsonValue};
