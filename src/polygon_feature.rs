@@ -36,6 +36,12 @@ pub struct PolygonFeature {
     pub foreign_members: Option<JsonObject>,
 }
 
+impl PolygonFeature {
+    pub fn polygon(&self) -> &PolygonType {
+        &self.polygon
+    }
+}
+
 impl TryFrom<geojson::Feature> for PolygonFeature {
     type Error = GeoJsonConversionError;
 

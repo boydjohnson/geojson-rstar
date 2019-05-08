@@ -38,6 +38,12 @@ pub struct LineStringFeature {
     pub foreign_members: Option<JsonObject>,
 }
 
+impl LineStringFeature {
+    pub fn line(&self) -> &LineStringType {
+        &self.line
+    }
+}
+
 impl TryFrom<geojson::Feature> for LineStringFeature {
     type Error = GeoJsonConversionError;
 

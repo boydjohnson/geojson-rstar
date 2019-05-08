@@ -33,6 +33,12 @@ pub struct PointFeature {
     pub foreign_members: Option<JsonObject>,
 }
 
+impl PointFeature {
+    pub fn point(&self) -> &PointType {
+        &self.point
+    }
+}
+
 impl TryFrom<geojson::Feature> for PointFeature {
     type Error = GeoJsonConversionError;
 
