@@ -14,8 +14,6 @@
 
 //! MultiPolygonFeature can be used with rstar::RTree and carry along the information from the GeoJson
 
-extern crate geojson;
-
 use crate::json::JsonObject;
 use geojson::PolygonType;
 use geojson::{feature::Id, Bbox};

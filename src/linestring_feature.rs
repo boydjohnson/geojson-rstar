@@ -14,8 +14,6 @@
 
 //! LineStringFeature can be used with rstar RTree
 
-extern crate geojson;
-
 use crate::conversion::create_geo_line_string;
 use crate::error::GeoJsonConversionError;
 use crate::generic::{GenericFeature, GetBbox};

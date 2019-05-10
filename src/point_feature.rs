@@ -14,10 +14,6 @@
 
 //! PointFeature can be used with rstar::RTree and carry along the information from the GeoJson
 
-extern crate geo;
-extern crate geojson;
-extern crate rstar;
-
 use crate::error::GeoJsonConversionError;
 use crate::generic::{GenericFeature, GetBbox};
 use crate::json::JsonObject;

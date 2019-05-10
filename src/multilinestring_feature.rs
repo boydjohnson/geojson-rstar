@@ -14,8 +14,6 @@
 
 //! MultiLineStringFeature can be used with rstar RTree
 
-extern crate geojson;
-
 use crate::json::JsonObject;
 use geojson::LineStringType;
 use geojson::{feature::Id, Bbox};

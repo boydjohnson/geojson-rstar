@@ -14,8 +14,6 @@
 
 //! PolygonFeature can be used with rstar::RTree and carry along the information from the GeoJson
 
-extern crate geojson;
-
 use crate::conversion::create_geo_polygon;
 use crate::error::GeoJsonConversionError;
 use crate::generic::{GenericFeature, GetBbox};

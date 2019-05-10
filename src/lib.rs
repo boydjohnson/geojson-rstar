@@ -12,9 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-extern crate geojson;
-extern crate rstar;
-
 pub mod conversion;
 pub mod error;
 pub mod generic;
