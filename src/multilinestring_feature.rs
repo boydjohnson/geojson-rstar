@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//! MultiLineStringFeature can be used with rstar RTree
+//! `MultiLineStringFeature` can be used with rstar `RTree`
 
 use crate::json::JsonObject;
 use geojson::LineStringType;

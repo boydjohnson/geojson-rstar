@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//! LineStringFeature can be used with rstar RTree
+//! `LineStringFeature` can be used with rstar `RTree`
 
 use crate::conversion::create_geo_line_string;
 use crate::error::GeoJsonConversionError;

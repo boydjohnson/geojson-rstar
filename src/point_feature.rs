@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//! PointFeature can be used with rstar::RTree and carry along the information from the GeoJson
+//! `PointFeature` can be used with `rstar::RTree` and carry along the information from the `GeoJson`
 
 use crate::error::GeoJsonConversionError;
 use crate::generic::{GenericFeature, GetBbox};
@@ -23,7 +23,7 @@ use geojson::{feature::Id, Bbox};
 use rstar::{Envelope, Point, PointDistance, RTreeObject, AABB};
 use std::convert::TryFrom;
 
-/// PointFeature has TryFrom<geojson::Feature> and can be used with RTree
+/// `PointFeature` has `TryFrom<geojson::Feature>` and can be used with `RTree`
 #[derive(Clone, Debug, PartialEq)]
 pub struct PointFeature {
     bbox: Bbox,

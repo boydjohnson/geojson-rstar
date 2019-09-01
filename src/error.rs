@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//! Errors that can result from conversion of GeoJson to rstar tree
+//! Errors that can result from conversion of `GeoJson` to rstar tree
 //! compatible structs.
 
 use geojson::feature::Id;
 
-/// An error that results from failing to convert the GeoJson Feature to
-/// a PointFeature, LinestringFeature, PolygonFeature, etc.
+/// An error that results from failing to convert the `GeoJson` `Feature` to
+/// a `PointFeature`, `LinestringFeature`, `PolygonFeature`, etc.
 #[derive(Debug)]
 pub enum GeoJsonConversionError {
     /// The Geometry is missing so no conversion can be made.
