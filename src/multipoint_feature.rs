@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//! MultiPointFeature can be used with rstar::RTree and carry along the information from the GeoJson
+//! `MultiPointFeature` can be used with `rstar::RTree` and carry along the information from the `GeoJson`
 
 use crate::json::JsonObject;
 use geojson::PointType;

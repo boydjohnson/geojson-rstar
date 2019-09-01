@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//! PolygonFeature can be used with rstar::RTree and carry along the information from the GeoJson
+//! `PolygonFeature` can be used with `rstar::RTree` and carry along the information from the `GeoJson`
 
 use crate::conversion::create_geo_polygon;
 use crate::error::GeoJsonConversionError;

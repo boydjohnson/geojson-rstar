@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//! MultiPolygonFeature can be used with rstar::RTree and carry along the information from the GeoJson
+//! `MultiPolygonFeature` can be used with `rstar::RTree` and carry along the information from the `GeoJson`
 
 use crate::json::JsonObject;
 use geojson::PolygonType;
