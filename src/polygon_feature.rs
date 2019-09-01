@@ -82,6 +82,11 @@ impl GenericFeature<PolygonFeature, PolygonType> for PolygonFeature {
             let id = feature.id.clone();
             return Err(GeoJsonConversionError::MalformedGeometry(id));
         }
+
+        if geometry.is_empty() || geometry.iter().any(|v| v.is_empty()) {
+            let id = feature.id.clone();
+            return Err(GeoJsonConversionError::MalformedGeometry(id));
+        }
         Ok(())
     }
 
@@ -139,7 +144,7 @@ impl PointDistance for PolygonFeature {
         } else if let Closest::SinglePoint(p) = closest {
             geo_point.haversine_distance(&p)
         } else {
-            unimplemented!()
+            panic!("Polygon Closest point will not be indeterminate");
         }
     }
 }
