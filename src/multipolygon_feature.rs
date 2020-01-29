@@ -14,9 +14,14 @@
 
 //! `MultiPolygonFeature` can be used with `rstar::RTree` and carry along the information from the `GeoJson`
 
+use crate::conversion::create_geo_multi_polygon;
+use crate::error::GeoJsonConversionError;
+use crate::generic::{GenericFeature, GetBbox};
 use crate::json::JsonObject;
+use geo::bounding_rect::BoundingRect;
 use geojson::PolygonType;
 use geojson::{feature::Id, Bbox};
+use std::convert::TryFrom;
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct MultiPolygonFeature {
@@ -25,4 +30,87 @@ pub struct MultiPolygonFeature {
     pub id: Option<Id>,
     pub properties: Option<JsonObject>,
     pub foreign_members: Option<JsonObject>,
+}
+
+impl MultiPolygonFeature {
+    pub fn polygons(&self) -> &[PolygonType] {
+        &self.polygons
+    }
+}
+
+impl TryFrom<geojson::Feature> for MultiPolygonFeature {
+    type Error = GeoJsonConversionError;
+
+    fn try_from(feature: geojson::Feature) -> Result<Self, Self::Error> {
+        <Self as GenericFeature<MultiPolygonFeature, Vec<PolygonType>>>::try_from(feature)
+    }
+}
+
+impl GenericFeature<MultiPolygonFeature, Vec<PolygonType>> for MultiPolygonFeature {
+    fn take_geometry_type(
+        feature: &mut geojson::Feature,
+    ) -> Result<Vec<PolygonType>, GeoJsonConversionError> {
+        if let geojson::Value::MultiPolygon(polygons) = feature
+            .geometry
+            .take()
+            .ok_or_else(|| {
+                let id = feature.id.clone();
+                GeoJsonConversionError::MissingGeometry(id)
+            })?
+            .value
+        {
+            Ok(polygons)
+        } else {
+            Err(GeoJsonConversionError::IncorrectGeometryValue(
+                "Error: did not find a MultiPolygon feature".into(),
+            ))
+        }
+    }
+
+    fn check_geometry(
+        geometries: &Vec<PolygonType>,
+        feature: &geojson::Feature,
+    ) -> Result<(), GeoJsonConversionError> {
+        if geometries.iter().any(|g| g.is_empty())
+            || geometries.iter().any(|g| g.iter().any(|l| l.is_empty()))
+        {
+            let id = feature.id.clone();
+            return Err(GeoJsonConversionError::MalformedGeometry(id));
+        }
+        Ok(())
+    }
+
+    fn compute_bbox(feature: &mut geojson::Feature, geometries: &Vec<PolygonType>) -> Bbox {
+        feature.bbox.take().unwrap_or_else(|| {
+            let bounding = create_geo_multi_polygon(geometries)
+                .bounding_rect()
+                .expect("Geo multipolygon had to bounding rectangle");
+            vec![
+                bounding.min.x,
+                bounding.min.y,
+                bounding.max.x,
+                bounding.max.y,
+            ]
+        })
+    }
+
+    fn create_self(
+        feature: geojson::Feature,
+        bbox: Bbox,
+        geometry: Vec<PolygonType>,
+    ) -> MultiPolygonFeature {
+        MultiPolygonFeature {
+            bbox,
+            id: feature.id,
+            polygons: geometry,
+            properties: feature.properties,
+            foreign_members: feature.foreign_members,
+        }
+    }
+}
+
+impl<'a> GetBbox<'a> for MultiPolygonFeature {
+    fn bbox(&'a self) -> &'a Bbox {
+        &self.bbox
+    }
 }
