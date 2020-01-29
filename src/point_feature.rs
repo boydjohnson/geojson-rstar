@@ -14,6 +14,7 @@
 
 //! `PointFeature` can be used with `rstar::RTree` and carry along the information from the `GeoJson`
 
+use crate::conversion::create_geo_point;
 use crate::error::GeoJsonConversionError;
 use crate::generic::{GenericFeature, GetBbox};
 use crate::json::JsonObject;
@@ -36,6 +37,24 @@ pub struct PointFeature {
 impl PointFeature {
     pub fn point(&self) -> &PointType {
         &self.point
+    }
+
+    pub fn geo_point(&self) -> geo::Point<f64> {
+        create_geo_point(&self.point)
+    }
+}
+
+impl Into<geojson::Feature> for PointFeature {
+    fn into(self) -> geojson::Feature {
+        let geometry = geojson::Geometry::new(geojson::Value::Point(self.point));
+
+        geojson::Feature {
+            id: self.id,
+            properties: self.properties,
+            foreign_members: self.foreign_members,
+            geometry: Some(geometry),
+            bbox: Some(self.bbox),
+        }
     }
 }
 

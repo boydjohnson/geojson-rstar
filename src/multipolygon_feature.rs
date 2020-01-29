@@ -40,6 +40,24 @@ impl MultiPolygonFeature {
     pub fn polygons(&self) -> &[PolygonType] {
         &self.polygons
     }
+
+    pub fn geo_polygons(&self) -> geo::MultiPolygon<f64> {
+        create_geo_multi_polygon(&self.polygons)
+    }
+}
+
+impl Into<geojson::Feature> for MultiPolygonFeature {
+    fn into(self) -> geojson::Feature {
+        let geometry = geojson::Geometry::new(geojson::Value::MultiPolygon(self.polygons));
+
+        geojson::Feature {
+            id: self.id,
+            properties: self.properties,
+            foreign_members: self.foreign_members,
+            geometry: Some(geometry),
+            bbox: Some(self.bbox),
+        }
+    }
 }
 
 impl TryFrom<geojson::Feature> for MultiPolygonFeature {

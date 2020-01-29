@@ -22,6 +22,7 @@ use geo::bounding_rect::BoundingRect;
 use geo::closest_point::ClosestPoint;
 use geo::haversine_distance::HaversineDistance;
 use geo::Closest;
+use geo::Polygon;
 use geojson::PolygonType;
 use geojson::{feature::Id, Bbox};
 use rstar::{Envelope, Point, PointDistance, RTreeObject, AABB};
@@ -39,6 +40,24 @@ pub struct PolygonFeature {
 impl PolygonFeature {
     pub fn polygon(&self) -> &PolygonType {
         &self.polygon
+    }
+
+    pub fn geo_polygon(&self) -> Polygon<f64> {
+        create_geo_polygon(&self.polygon)
+    }
+}
+
+impl Into<geojson::Feature> for PolygonFeature {
+    fn into(self) -> geojson::Feature {
+        let geometry = geojson::Geometry::new(geojson::Value::Polygon(self.polygon));
+
+        geojson::Feature {
+            id: self.id,
+            properties: self.properties,
+            foreign_members: self.foreign_members,
+            geometry: Some(geometry),
+            bbox: Some(self.bbox),
+        }
     }
 }
 

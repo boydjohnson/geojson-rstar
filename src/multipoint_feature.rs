@@ -40,6 +40,24 @@ impl MultiPointFeature {
     pub fn points(&self) -> &[PointType] {
         &self.points
     }
+
+    pub fn geo_points(&self) -> geo::MultiPoint<f64> {
+        create_geo_multi_point(&self.points)
+    }
+}
+
+impl Into<geojson::Feature> for MultiPointFeature {
+    fn into(self) -> geojson::Feature {
+        let geometry = geojson::Geometry::new(geojson::Value::MultiPoint(self.points));
+
+        geojson::Feature {
+            id: self.id,
+            properties: self.properties,
+            foreign_members: self.foreign_members,
+            geometry: Some(geometry),
+            bbox: Some(self.bbox),
+        }
+    }
 }
 
 impl TryFrom<geojson::Feature> for MultiPointFeature {
