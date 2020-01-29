@@ -26,6 +26,7 @@ pub use error::GeoJsonConversionError;
 pub use linestring_feature::LineStringFeature;
 pub use multilinestring_feature::MultiLineStringFeature;
 pub use multipoint_feature::MultiPointFeature;
+pub use multipolygon_feature::MultiPolygonFeature;
 pub use point_feature::PointFeature;
 pub use polygon_feature::PolygonFeature;
 
@@ -42,6 +43,7 @@ pub enum Feature {
     LineString(LineStringFeature),
     MultiPoint(MultiPointFeature),
     MultiLineString(MultiLineStringFeature),
+    MultiPolygon(MultiPolygonFeature),
 }
 
 impl rstar::RTreeObject for Feature {
@@ -54,6 +56,7 @@ impl rstar::RTreeObject for Feature {
             Feature::LineString(line) => line.envelope(),
             Feature::MultiPoint(mpoint) => mpoint.envelope(),
             Feature::MultiLineString(mline) => mline.envelope(),
+            Feature::MultiPolygon(mpolygon) => mpolygon.envelope(),
         }
     }
 }
@@ -69,6 +72,7 @@ impl rstar::PointDistance for Feature {
             Feature::LineString(line) => line.distance_2(point),
             Feature::MultiPoint(mpoint) => mpoint.distance_2(point),
             Feature::MultiLineString(mline) => mline.distance_2(point),
+            Feature::MultiPolygon(mpolygon) => mpolygon.distance_2(point),
         }
     }
 }
@@ -91,7 +95,9 @@ impl TryFrom<geojson::Feature> for Feature {
             Some(geojson::Value::MultiLineString(_)) => {
                 MultiLineStringFeature::try_from(feature).map(Feature::MultiLineString)
             }
-            Some(geojson::Value::MultiPolygon(_)) => panic!("MultiPolygon is not implemented yet"),
+            Some(geojson::Value::MultiPolygon(_)) => {
+                MultiPolygonFeature::try_from(feature).map(Feature::MultiPolygon)
+            }
             Some(geojson::Value::GeometryCollection(_)) => {
                 panic!("GeometryCollection is not implemented yet")
             }
