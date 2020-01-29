@@ -23,10 +23,49 @@ pub mod point_feature;
 pub mod polygon_feature;
 
 pub use linestring_feature::LineStringFeature;
+pub use multilinestring_feature::MultiLineStringFeature;
+pub use multipoint_feature::MultiPointFeature;
 pub use point_feature::PointFeature;
 pub use polygon_feature::PolygonFeature;
 
 mod json {
     use serde_json::{Map, Value as JsonValue};
     pub type JsonObject = Map<String, JsonValue>;
+}
+
+pub enum Feature {
+    Point(PointFeature),
+    Polygon(PolygonFeature),
+    LineString(LineStringFeature),
+    MultiPoint(MultiPointFeature),
+    MultiLineString(MultiLineStringFeature),
+}
+
+impl rstar::RTreeObject for Feature {
+    type Envelope = rstar::AABB<[f64; 2]>;
+
+    fn envelope(&self) -> Self::Envelope {
+        match self {
+            Feature::Point(point) => point.envelope(),
+            Feature::Polygon(polygon) => polygon.envelope(),
+            Feature::LineString(line) => line.envelope(),
+            Feature::MultiPoint(mpoint) => mpoint.envelope(),
+            Feature::MultiLineString(mline) => mline.envelope(),
+        }
+    }
+}
+
+impl rstar::PointDistance for Feature {
+    fn distance_2(
+        &self,
+        point: &<Self::Envelope as rstar::Envelope>::Point,
+    ) -> <<Self::Envelope as rstar::Envelope>::Point as rstar::Point>::Scalar {
+        match self {
+            Feature::Point(p) => p.distance_2(point),
+            Feature::Polygon(polygon) => polygon.distance_2(point),
+            Feature::LineString(line) => line.distance_2(point),
+            Feature::MultiPoint(mpoint) => mpoint.distance_2(point),
+            Feature::MultiLineString(mline) => mline.distance_2(point),
+        }
+    }
 }
