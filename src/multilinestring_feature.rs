@@ -39,6 +39,24 @@ impl MultiLineStringFeature {
     pub fn lines(&self) -> &[LineStringType] {
         &self.lines
     }
+
+    pub fn geo_lines(&self) -> geo::MultiLineString<f64> {
+        create_geo_multi_line_string(&self.lines)
+    }
+}
+
+impl Into<geojson::Feature> for MultiLineStringFeature {
+    fn into(self) -> geojson::Feature {
+        let geometry = geojson::Geometry::new(geojson::Value::MultiLineString(self.lines));
+
+        geojson::Feature {
+            id: self.id,
+            properties: self.properties,
+            foreign_members: self.foreign_members,
+            geometry: Some(geometry),
+            bbox: Some(self.bbox),
+        }
+    }
 }
 
 impl TryFrom<geojson::Feature> for MultiLineStringFeature {

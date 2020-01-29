@@ -105,3 +105,16 @@ impl TryFrom<geojson::Feature> for Feature {
         }
     }
 }
+
+impl Into<geojson::Feature> for Feature {
+    fn into(self) -> geojson::Feature {
+        match self {
+            Feature::Point(p) => p.into(),
+            Feature::LineString(l) => l.into(),
+            Feature::Polygon(p) => p.into(),
+            Feature::MultiPoint(p) => p.into(),
+            Feature::MultiLineString(l) => l.into(),
+            Feature::MultiPolygon(p) => p.into(),
+        }
+    }
+}

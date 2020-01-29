@@ -42,6 +42,24 @@ impl LineStringFeature {
     pub fn line(&self) -> &LineStringType {
         &self.line
     }
+
+    pub fn geo_line(&self) -> geo::LineString<f64> {
+        create_geo_line_string(&self.line)
+    }
+}
+
+impl Into<geojson::Feature> for LineStringFeature {
+    fn into(self) -> geojson::Feature {
+        let geometry = geojson::Geometry::new(geojson::Value::LineString(self.line));
+
+        geojson::Feature {
+            id: self.id,
+            properties: self.properties,
+            foreign_members: self.foreign_members,
+            geometry: Some(geometry),
+            bbox: Some(self.bbox),
+        }
+    }
 }
 
 impl TryFrom<geojson::Feature> for LineStringFeature {
