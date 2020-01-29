@@ -19,8 +19,12 @@ use crate::error::GeoJsonConversionError;
 use crate::generic::{GenericFeature, GetBbox};
 use crate::json::JsonObject;
 use geo::bounding_rect::BoundingRect;
+use geo::closest_point::ClosestPoint;
+use geo::haversine_distance::HaversineDistance;
+use geo::Closest;
 use geojson::PolygonType;
 use geojson::{feature::Id, Bbox};
+use rstar::{Envelope, Point, PointDistance, RTreeObject, AABB};
 use std::convert::TryFrom;
 
 #[derive(Clone, Debug, PartialEq)]
@@ -112,5 +116,34 @@ impl GenericFeature<MultiPolygonFeature, Vec<PolygonType>> for MultiPolygonFeatu
 impl<'a> GetBbox<'a> for MultiPolygonFeature {
     fn bbox(&'a self) -> &'a Bbox {
         &self.bbox
+    }
+}
+
+impl RTreeObject for MultiPolygonFeature {
+    type Envelope = AABB<[f64; 2]>;
+
+    fn envelope(&self) -> Self::Envelope {
+        <Self as GetBbox>::envelope(self)
+    }
+}
+
+impl PointDistance for MultiPolygonFeature {
+    fn distance_2(
+        &self,
+        point: &<Self::Envelope as Envelope>::Point,
+    ) -> <<Self::Envelope as Envelope>::Point as Point>::Scalar {
+        let self_m_polygon = create_geo_multi_polygon(&self.polygons);
+
+        let geo_point = geo::Point::new(point[0], point[1]);
+
+        let closest = self_m_polygon.closest_point(&geo_point);
+
+        if let Closest::Intersection(_) = closest {
+            0.0
+        } else if let Closest::SinglePoint(p) = closest {
+            geo_point.haversine_distance(&p)
+        } else {
+            panic!("MultiPolygon Closest point will not be indeterminate")
+        }
     }
 }
