@@ -22,11 +22,15 @@ pub mod multipolygon_feature;
 pub mod point_feature;
 pub mod polygon_feature;
 
+pub use error::GeoJsonConversionError;
 pub use linestring_feature::LineStringFeature;
 pub use multilinestring_feature::MultiLineStringFeature;
 pub use multipoint_feature::MultiPointFeature;
+pub use multipolygon_feature::MultiPolygonFeature;
 pub use point_feature::PointFeature;
 pub use polygon_feature::PolygonFeature;
+
+use std::convert::TryFrom;
 
 mod json {
     use serde_json::{Map, Value as JsonValue};
@@ -39,6 +43,7 @@ pub enum Feature {
     LineString(LineStringFeature),
     MultiPoint(MultiPointFeature),
     MultiLineString(MultiLineStringFeature),
+    MultiPolygon(MultiPolygonFeature),
 }
 
 impl rstar::RTreeObject for Feature {
@@ -51,6 +56,7 @@ impl rstar::RTreeObject for Feature {
             Feature::LineString(line) => line.envelope(),
             Feature::MultiPoint(mpoint) => mpoint.envelope(),
             Feature::MultiLineString(mline) => mline.envelope(),
+            Feature::MultiPolygon(mpolygon) => mpolygon.envelope(),
         }
     }
 }
@@ -66,6 +72,36 @@ impl rstar::PointDistance for Feature {
             Feature::LineString(line) => line.distance_2(point),
             Feature::MultiPoint(mpoint) => mpoint.distance_2(point),
             Feature::MultiLineString(mline) => mline.distance_2(point),
+            Feature::MultiPolygon(mpolygon) => mpolygon.distance_2(point),
+        }
+    }
+}
+
+impl TryFrom<geojson::Feature> for Feature {
+    type Error = GeoJsonConversionError;
+
+    fn try_from(feature: geojson::Feature) -> Result<Feature, Self::Error> {
+        match feature.geometry.as_ref().map(|g| &g.value) {
+            Some(geojson::Value::Point(_)) => PointFeature::try_from(feature).map(Feature::Point),
+            Some(geojson::Value::LineString(_)) => {
+                LineStringFeature::try_from(feature).map(Feature::LineString)
+            }
+            Some(geojson::Value::Polygon(_)) => {
+                PolygonFeature::try_from(feature).map(Feature::Polygon)
+            }
+            Some(geojson::Value::MultiPoint(_)) => {
+                MultiPointFeature::try_from(feature).map(Feature::MultiPoint)
+            }
+            Some(geojson::Value::MultiLineString(_)) => {
+                MultiLineStringFeature::try_from(feature).map(Feature::MultiLineString)
+            }
+            Some(geojson::Value::MultiPolygon(_)) => {
+                MultiPolygonFeature::try_from(feature).map(Feature::MultiPolygon)
+            }
+            Some(geojson::Value::GeometryCollection(_)) => {
+                panic!("GeometryCollection is not implemented yet")
+            }
+            None => Err(GeoJsonConversionError::MissingGeometry(feature.id)),
         }
     }
 }
