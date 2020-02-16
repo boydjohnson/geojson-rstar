@@ -37,6 +37,7 @@ mod json {
     pub type JsonObject = Map<String, JsonValue>;
 }
 
+#[derive(Debug, Clone, PartialEq)]
 pub enum Feature {
     Point(PointFeature),
     Polygon(PolygonFeature),
