@@ -14,8 +14,9 @@
 // limitations under the License.
 
 use geo::{Coordinate, LineString, MultiLineString, MultiPoint, MultiPolygon, Point, Polygon};
-use geojson::{LineStringType, PointType, PolygonType};
+use geojson::{Geometry, LineStringType, PointType, PolygonType, Value};
 use num_traits::Float;
+use std::iter::FromIterator;
 
 pub fn create_point_type<T>(point: &Point<T>) -> PointType
 where
@@ -167,4 +168,23 @@ where
             .map(|polygon_type| create_geo_polygon(&polygon_type))
             .collect(),
     )
+}
+
+pub fn create_geo_geometry_collection<T>(geometries: &[Geometry]) -> geo::GeometryCollection<T>
+where
+    T: Float,
+{
+    geo::GeometryCollection::from_iter(geometries.iter().map(|g| match &g.value {
+        Value::Point(p) => geo::Geometry::Point(create_geo_point(&p)),
+        Value::LineString(l) => geo::Geometry::LineString(create_geo_line_string(&l)),
+        Value::Polygon(p) => geo::Geometry::Polygon(create_geo_polygon(&p)),
+        Value::MultiPoint(p) => geo::Geometry::MultiPoint(create_geo_multi_point(&p)),
+        Value::MultiPolygon(p) => geo::Geometry::MultiPolygon(create_geo_multi_polygon(&p)),
+        Value::MultiLineString(p) => {
+            geo::Geometry::MultiLineString(create_geo_multi_line_string(&p))
+        }
+        Value::GeometryCollection(g) => {
+            geo::Geometry::GeometryCollection(create_geo_geometry_collection(&g))
+        }
+    }))
 }
