@@ -18,7 +18,6 @@ use crate::conversion::create_geo_point;
 use crate::error::GeoJsonConversionError;
 use crate::generic::{GenericFeature, GetBbox};
 use crate::json::JsonObject;
-use geo::haversine_distance::HaversineDistance;
 use geojson::PointType;
 use geojson::{feature::Id, Bbox};
 use rstar::{Envelope, Point, PointDistance, RTreeObject, AABB};
@@ -135,16 +134,6 @@ impl PointDistance for PointFeature {
         &self,
         point: &<Self::Envelope as Envelope>::Point,
     ) -> <<Self::Envelope as Envelope>::Point as Point>::Scalar {
-        let self_point = geo::Point::new(
-            *self
-                .point
-                .get(0)
-                .expect("Already checked that PointFeature has 2 values"),
-            *self
-                .point
-                .get(1)
-                .expect("Already checked that PointFeature has 2 values"),
-        );
-        self_point.haversine_distance(&geo::Point::new(point[0], point[1]))
+        self.geo_point().distance_2(&(*point).into())
     }
 }
