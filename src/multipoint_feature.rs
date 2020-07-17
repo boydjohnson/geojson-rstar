@@ -22,7 +22,7 @@ use crate::{
 };
 use geo::{
     algorithm::closest_point::ClosestPoint, bounding_rect::BoundingRect,
-    haversine_distance::HaversineDistance, Closest,
+    euclidean_distance::EuclideanDistance, Closest,
 };
 use geojson::{feature::Id, Bbox, PointType};
 use rstar::{Envelope, Point, PointDistance, RTreeObject, AABB};
@@ -157,7 +157,7 @@ impl PointDistance for MultiPointFeature {
         if let Closest::Intersection(_) = closest {
             0.0
         } else if let Closest::SinglePoint(p) = closest {
-            geo_point.haversine_distance(&p)
+            geo_point.euclidean_distance(&p).powi(2)
         } else {
             unimplemented!()
         }
