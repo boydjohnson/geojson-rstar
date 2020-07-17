@@ -115,10 +115,10 @@ impl GenericFeature<LineStringFeature, LineStringType> for LineStringFeature {
                 .bounding_rect()
                 .expect("Expect a bounding rect will be produced");
             vec![
-                maybe_rect.min.x,
-                maybe_rect.min.y,
-                maybe_rect.max.x,
-                maybe_rect.max.y,
+                maybe_rect.min().x,
+                maybe_rect.min().y,
+                maybe_rect.max().x,
+                maybe_rect.max().y,
             ]
         })
     }

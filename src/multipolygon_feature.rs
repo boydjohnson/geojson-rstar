@@ -108,10 +108,10 @@ impl GenericFeature<MultiPolygonFeature, Vec<PolygonType>> for MultiPolygonFeatu
                 .bounding_rect()
                 .expect("Geo multipolygon had to bounding rectangle");
             vec![
-                bounding.min.x,
-                bounding.min.y,
-                bounding.max.x,
-                bounding.max.y,
+                bounding.min().x,
+                bounding.min().y,
+                bounding.max().x,
+                bounding.max().y,
             ]
         })
     }

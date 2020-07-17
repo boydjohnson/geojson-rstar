@@ -106,10 +106,10 @@ impl GenericFeature<MultiPointFeature, Vec<PointType>> for MultiPointFeature {
                 .bounding_rect()
                 .expect("Geo multi point had no bounding rectangle");
             vec![
-                bounding.min.x,
-                bounding.min.y,
-                bounding.max.x,
-                bounding.max.y,
+                bounding.min().x,
+                bounding.min().y,
+                bounding.max().x,
+                bounding.max().y,
             ]
         })
     }
