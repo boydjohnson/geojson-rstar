@@ -121,7 +121,12 @@ impl GenericFeature<GeometryCollectionFeature, Vec<Geometry>> for GeometryCollec
             let bounds = geo::MultiPolygon::from(polygons)
                 .bounding_rect()
                 .expect("Polygons have a bounding rectangle");
-            vec![bounds.min.x, bounds.min.y, bounds.max.x, bounds.max.y]
+            vec![
+                bounds.min().x,
+                bounds.min().y,
+                bounds.max().x,
+                bounds.max().y,
+            ]
         })
     }
 
@@ -163,6 +168,12 @@ fn convert_bounding_rect(geo_geometry_collection: geo::GeometryCollection<f64>) 
             }
             geo::Geometry::Line(_) => {
                 panic!("GeoJson GeometryCollection Geometry turned into Line, incorrect.");
+            }
+            geo::Geometry::Rect(_) => {
+                panic!("GeoJson GeometryCollection Geometry can not contain Rect");
+            }
+            geo::Geometry::Triangle(_) => {
+                panic!("GeoJson GeometryCollection Geometry can not contain Triangle");
             }
             geo::Geometry::GeometryCollection(g) => convert_bounding_rect(g),
         })

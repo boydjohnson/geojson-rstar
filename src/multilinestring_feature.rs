@@ -107,10 +107,10 @@ impl GenericFeature<MultiLineStringFeature, Vec<LineStringType>> for MultiLineSt
                 .bounding_rect()
                 .expect("Was able to create bounding rectangle");
             vec![
-                maybe_rect.min.x,
-                maybe_rect.min.y,
-                maybe_rect.max.x,
-                maybe_rect.max.y,
+                maybe_rect.min().x,
+                maybe_rect.min().y,
+                maybe_rect.max().x,
+                maybe_rect.max().y,
             ]
         })
     }

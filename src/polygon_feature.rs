@@ -115,10 +115,10 @@ impl GenericFeature<PolygonFeature, PolygonType> for PolygonFeature {
                 .bounding_rect()
                 .expect("Expect a bounding rectangle");
             vec![
-                maybe_rect.min.x,
-                maybe_rect.min.y,
-                maybe_rect.max.x,
-                maybe_rect.max.y,
+                maybe_rect.min().x,
+                maybe_rect.min().y,
+                maybe_rect.max().x,
+                maybe_rect.max().y,
             ]
         })
     }
