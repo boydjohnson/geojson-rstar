@@ -22,7 +22,7 @@ use crate::{
 };
 use geo::{
     bounding_rect::BoundingRect, closest_point::ClosestPoint,
-    haversine_distance::HaversineDistance, Closest, Polygon,
+    euclidean_distance::EuclideanDistance, Closest, Polygon,
 };
 use geojson::{feature::Id, Bbox, PolygonType};
 use rstar::{Envelope, Point, PointDistance, RTreeObject, AABB};
@@ -161,7 +161,7 @@ impl PointDistance for PolygonFeature {
         if let Closest::Intersection(_) = closest {
             0.0
         } else if let Closest::SinglePoint(p) = closest {
-            geo_point.haversine_distance(&p)
+            geo_point.euclidean_distance(&p).powi(2)
         } else {
             panic!("Polygon Closest point will not be indeterminate");
         }
