@@ -14,12 +14,13 @@
 
 //! `PointFeature` can be used with `rstar::RTree` and carry along the information from the `GeoJson`
 
-use crate::conversion::create_geo_point;
-use crate::error::GeoJsonConversionError;
-use crate::generic::{GenericFeature, GetBbox};
-use crate::json::JsonObject;
-use geojson::PointType;
-use geojson::{feature::Id, Bbox};
+use crate::{
+    conversion::create_geo_point,
+    error::GeoJsonConversionError,
+    generic::{GenericFeature, GetBbox},
+    json::JsonObject,
+};
+use geojson::{feature::Id, Bbox, PointType};
 use rstar::{Envelope, Point, PointDistance, RTreeObject, AABB};
 use std::convert::TryFrom;
 

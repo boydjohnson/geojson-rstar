@@ -14,16 +14,17 @@
 
 //! `MultiPointFeature` can be used with `rstar::RTree` and carry along the information from the `GeoJson`
 
-use crate::conversion::create_geo_multi_point;
-use crate::error::GeoJsonConversionError;
-use crate::generic::{GenericFeature, GetBbox};
-use crate::json::JsonObject;
-use geo::algorithm::closest_point::ClosestPoint;
-use geo::bounding_rect::BoundingRect;
-use geo::haversine_distance::HaversineDistance;
-use geo::Closest;
-use geojson::PointType;
-use geojson::{feature::Id, Bbox};
+use crate::{
+    conversion::create_geo_multi_point,
+    error::GeoJsonConversionError,
+    generic::{GenericFeature, GetBbox},
+    json::JsonObject,
+};
+use geo::{
+    algorithm::closest_point::ClosestPoint, bounding_rect::BoundingRect,
+    haversine_distance::HaversineDistance, Closest,
+};
+use geojson::{feature::Id, Bbox, PointType};
 use rstar::{Envelope, Point, PointDistance, RTreeObject, AABB};
 use std::convert::TryFrom;
 

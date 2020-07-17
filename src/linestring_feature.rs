@@ -14,17 +14,20 @@
 
 //! `LineStringFeature` can be used with rstar `RTree`
 
-use crate::conversion::create_geo_line_string;
-use crate::error::GeoJsonConversionError;
-use crate::generic::{GenericFeature, GetBbox};
-use crate::json::JsonObject;
-use geo::algorithm::bounding_rect::BoundingRect;
-use geo::algorithm::closest_point::ClosestPoint;
-use geo::algorithm::euclidean_length::EuclideanLength;
-use geo::algorithm::haversine_distance::HaversineDistance;
-use geo::Closest;
-use geojson::LineStringType;
-use geojson::{feature::Id, Bbox};
+use crate::{
+    conversion::create_geo_line_string,
+    error::GeoJsonConversionError,
+    generic::{GenericFeature, GetBbox},
+    json::JsonObject,
+};
+use geo::{
+    algorithm::{
+        bounding_rect::BoundingRect, closest_point::ClosestPoint,
+        euclidean_length::EuclideanLength, haversine_distance::HaversineDistance,
+    },
+    Closest,
+};
+use geojson::{feature::Id, Bbox, LineStringType};
 use num_traits::identities::Zero;
 use rstar::{Envelope, Point, PointDistance, RTreeObject, AABB};
 use std::convert::TryFrom;
