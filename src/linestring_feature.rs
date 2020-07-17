@@ -20,13 +20,7 @@ use crate::{
     generic::{GenericFeature, GetBbox},
     json::JsonObject,
 };
-use geo::{
-    algorithm::{
-        bounding_rect::BoundingRect, closest_point::ClosestPoint,
-        euclidean_length::EuclideanLength, haversine_distance::HaversineDistance,
-    },
-    Closest,
-};
+use geo::algorithm::{bounding_rect::BoundingRect, euclidean_length::EuclideanLength};
 use geojson::{feature::Id, Bbox, LineStringType};
 use num_traits::identities::Zero;
 use rstar::{Envelope, Point, PointDistance, RTreeObject, AABB};
@@ -160,17 +154,6 @@ impl PointDistance for LineStringFeature {
         &self,
         point: &<Self::Envelope as Envelope>::Point,
     ) -> <<Self::Envelope as Envelope>::Point as Point>::Scalar {
-        let self_linestring = create_geo_line_string(&self.line);
-
-        let geo_point = geo::Point::new(point[0], point[1]);
-
-        let closest = self_linestring.closest_point(&geo_point);
-        if let Closest::Intersection(_) = closest {
-            0.0
-        } else if let Closest::SinglePoint(p) = closest {
-            geo_point.haversine_distance(&p)
-        } else {
-            panic!("The geometry check on LineStringFeature should have ruled this out");
-        }
+        self.geo_line().distance_2(&(*point).into())
     }
 }
