@@ -12,18 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use crate::conversion::create_geo_geometry_collection;
-use crate::error::GeoJsonConversionError;
-use crate::generic::GenericFeature;
-use crate::json::JsonObject;
 use crate::{
-    LineStringFeature, MultiLineStringFeature, MultiPointFeature, MultiPolygonFeature,
-    PointFeature, PolygonFeature,
+    conversion::create_geo_geometry_collection, error::GeoJsonConversionError,
+    generic::GenericFeature, json::JsonObject, LineStringFeature, MultiLineStringFeature,
+    MultiPointFeature, MultiPolygonFeature, PointFeature, PolygonFeature,
 };
-use geo::algorithm::bounding_rect::BoundingRect;
-use geo::{Coordinate, Rect};
-use geojson::{feature::Id, Bbox};
-use geojson::{Geometry, Value};
+use geo::{algorithm::bounding_rect::BoundingRect, Coordinate, Rect};
+use geojson::{feature::Id, Bbox, Geometry, Value};
 use std::convert::TryFrom;
 
 #[derive(Clone, Debug, PartialEq)]

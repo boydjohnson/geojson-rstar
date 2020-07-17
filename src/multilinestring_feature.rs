@@ -14,15 +14,17 @@
 
 //! `MultiLineStringFeature` can be used with rstar `RTree`
 
-use crate::conversion::create_geo_multi_line_string;
-use crate::error::GeoJsonConversionError;
-use crate::generic::{GenericFeature, GetBbox};
-use crate::json::JsonObject;
-use geo::bounding_rect::BoundingRect;
-use geo::haversine_distance::HaversineDistance;
-use geo::{closest_point::ClosestPoint, Closest};
-use geojson::LineStringType;
-use geojson::{feature::Id, Bbox};
+use crate::{
+    conversion::create_geo_multi_line_string,
+    error::GeoJsonConversionError,
+    generic::{GenericFeature, GetBbox},
+    json::JsonObject,
+};
+use geo::{
+    bounding_rect::BoundingRect, closest_point::ClosestPoint,
+    haversine_distance::HaversineDistance, Closest,
+};
+use geojson::{feature::Id, Bbox, LineStringType};
 use rstar::{Envelope, Point, PointDistance, RTreeObject, AABB};
 use std::convert::TryFrom;
 

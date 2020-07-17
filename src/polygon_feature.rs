@@ -14,17 +14,17 @@
 
 //! `PolygonFeature` can be used with `rstar::RTree` and carry along the information from the `GeoJson`
 
-use crate::conversion::create_geo_polygon;
-use crate::error::GeoJsonConversionError;
-use crate::generic::{GenericFeature, GetBbox};
-use crate::json::JsonObject;
-use geo::bounding_rect::BoundingRect;
-use geo::closest_point::ClosestPoint;
-use geo::haversine_distance::HaversineDistance;
-use geo::Closest;
-use geo::Polygon;
-use geojson::PolygonType;
-use geojson::{feature::Id, Bbox};
+use crate::{
+    conversion::create_geo_polygon,
+    error::GeoJsonConversionError,
+    generic::{GenericFeature, GetBbox},
+    json::JsonObject,
+};
+use geo::{
+    bounding_rect::BoundingRect, closest_point::ClosestPoint,
+    haversine_distance::HaversineDistance, Closest, Polygon,
+};
+use geojson::{feature::Id, Bbox, PolygonType};
 use rstar::{Envelope, Point, PointDistance, RTreeObject, AABB};
 use std::convert::TryFrom;
 
