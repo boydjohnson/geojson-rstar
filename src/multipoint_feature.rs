@@ -20,10 +20,7 @@ use crate::{
     generic::{GenericFeature, GetBbox},
     json::JsonObject,
 };
-use geo::{
-    algorithm::closest_point::ClosestPoint, bounding_rect::BoundingRect,
-    euclidean_distance::EuclideanDistance, Closest,
-};
+use geo::{bounding_rect::BoundingRect, euclidean_distance::EuclideanDistance};
 use geojson::{feature::Id, Bbox, PointType};
 use rstar::{Envelope, Point, PointDistance, RTreeObject, AABB};
 use std::convert::TryFrom;
@@ -149,17 +146,7 @@ impl PointDistance for MultiPointFeature {
         &self,
         point: &<Self::Envelope as Envelope>::Point,
     ) -> <<Self::Envelope as Envelope>::Point as Point>::Scalar {
-        let self_points = create_geo_multi_point(&self.points);
-
-        let geo_point = geo::Point::new(point[0], point[1]);
-
-        let closest = self_points.closest_point(&geo_point);
-        if let Closest::Intersection(_) = closest {
-            0.0
-        } else if let Closest::SinglePoint(p) = closest {
-            geo_point.euclidean_distance(&p).powi(2)
-        } else {
-            unimplemented!()
-        }
+        let p: geo::Point<f64> = (*point).into();
+        self.geo_points().euclidean_distance(&p).powi(2)
     }
 }
