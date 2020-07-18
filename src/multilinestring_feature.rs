@@ -20,10 +20,7 @@ use crate::{
     generic::{GenericFeature, GetBbox},
     json::JsonObject,
 };
-use geo::{
-    bounding_rect::BoundingRect, closest_point::ClosestPoint,
-    euclidean_distance::EuclideanDistance, Closest,
-};
+use geo::{bounding_rect::BoundingRect, euclidean_distance::EuclideanDistance};
 use geojson::{feature::Id, Bbox, LineStringType};
 use rstar::{Envelope, Point, PointDistance, RTreeObject, AABB};
 use std::convert::TryFrom;
@@ -151,17 +148,7 @@ impl PointDistance for MultiLineStringFeature {
         &self,
         point: &<Self::Envelope as Envelope>::Point,
     ) -> <<Self::Envelope as Envelope>::Point as Point>::Scalar {
-        let self_lines = create_geo_multi_line_string(&self.lines);
-
-        let geo_point = geo::Point::new(point[0], point[1]);
-
-        let closest = self_lines.closest_point(&geo_point);
-        if let Closest::Intersection(_) = closest {
-            0.0
-        } else if let Closest::SinglePoint(p) = closest {
-            p.euclidean_distance(&geo_point).powi(2)
-        } else {
-            unimplemented!()
-        }
+        let p: geo::Point<f64> = (*point).into();
+        self.geo_lines().euclidean_distance(&p).powi(2)
     }
 }

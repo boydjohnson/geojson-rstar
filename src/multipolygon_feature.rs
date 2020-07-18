@@ -20,10 +20,7 @@ use crate::{
     generic::{GenericFeature, GetBbox},
     json::JsonObject,
 };
-use geo::{
-    bounding_rect::BoundingRect, closest_point::ClosestPoint,
-    euclidean_distance::EuclideanDistance, Closest,
-};
+use geo::{bounding_rect::BoundingRect, euclidean_distance::EuclideanDistance};
 use geojson::{feature::Id, Bbox, PolygonType};
 use rstar::{Envelope, Point, PointDistance, RTreeObject, AABB};
 use std::convert::TryFrom;
@@ -151,18 +148,7 @@ impl PointDistance for MultiPolygonFeature {
         &self,
         point: &<Self::Envelope as Envelope>::Point,
     ) -> <<Self::Envelope as Envelope>::Point as Point>::Scalar {
-        let self_m_polygon = create_geo_multi_polygon(&self.polygons);
-
-        let geo_point = geo::Point::new(point[0], point[1]);
-
-        let closest = self_m_polygon.closest_point(&geo_point);
-
-        if let Closest::Intersection(_) = closest {
-            0.0
-        } else if let Closest::SinglePoint(p) = closest {
-            geo_point.euclidean_distance(&p).powi(2)
-        } else {
-            panic!("MultiPolygon Closest point will not be indeterminate")
-        }
+        let p: geo::Point<f64> = (*point).into();
+        self.geo_polygons().euclidean_distance(&p).powi(2)
     }
 }
